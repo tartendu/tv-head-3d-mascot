@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-  Echo TV Head, by Tartendu Kumar (Co-founder & CTO, Zencia.ai). MIT License, see LICENSE.
-  https://www.linkedin.com/in/tartendukumar/  ·  https://zencia.ai
+  Echo TV Head, by Tartendu Kumar (Co-founder & CTO, Zensia.ai). MIT License, see LICENSE.
+  https://www.linkedin.com/in/tartendukumar/  ·  https://zensia.ai
 -->
 <html lang="en">
 <head>
@@ -237,6 +237,54 @@
     .fh[data-live="1"] .fh-talk { background: #b3362f; }
     .fh-hint { font-size: .8rem; color: var(--muted); }
 
+    /* "Ask Echo" question pills, shown after the first greeting */
+    .fh-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: clamp(14px, 2.2vh, 20px); max-width: 520px; }
+    .fh-chips-label {
+        width: 100%; margin-bottom: 2px;
+        font-size: .72rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--muted);
+    }
+    .fh-chips > * { opacity: 0; translate: 0 8px; pointer-events: none; transition: opacity .45s ease, translate .5s cubic-bezier(.16,1,.3,1); }
+    .fh[data-chips="1"] .fh-chips > * { opacity: 1; translate: 0 0; pointer-events: auto; }
+    .fh[data-chips="1"] .fh-chips > :nth-child(2) { transition-delay: .08s; }
+    .fh[data-chips="1"] .fh-chips > :nth-child(3) { transition-delay: .16s; }
+    .fh[data-chips="1"] .fh-chips > :nth-child(4) { transition-delay: .24s; }
+    .fh-chip {
+        font: inherit; font-size: .88rem; font-weight: 500; color: var(--ink); cursor: pointer;
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: .55rem 1rem .55rem .7rem; border-radius: 999px;
+        background: rgba(255,255,255,.62); border: 1px solid rgba(30,32,36,.14);
+        -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+        box-shadow: 0 8px 20px -16px rgba(24,25,27,.6);
+        transition: opacity .45s ease, translate .5s cubic-bezier(.16,1,.3,1), transform .15s ease, background .2s ease, border-color .2s ease, color .2s ease;
+    }
+    .fh-chip:hover { transform: translateY(-2px); border-color: rgba(30,32,36,.32); background: rgba(255,255,255,.85); }
+    .fh-chip:focus-visible { outline: 3px solid rgba(95,102,112,.4); outline-offset: 2px; }
+    .fh-chip-ico {
+        display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+        background: var(--ink); color: #fff; flex: none;
+    }
+    .fh-chip-ico svg { width: 12px; height: 12px; }
+    .fh-chip-eq { display: none; gap: 2px; align-items: flex-end; height: 12px; }
+    .fh-chip-eq i { width: 2px; background: currentColor; border-radius: 1px; animation: fh-eq .5s ease-in-out infinite alternate; }
+    .fh-chip-eq i:nth-child(2) { animation-delay: .15s; }
+    .fh-chip-eq i:nth-child(3) { animation-delay: .3s; }
+    @keyframes fh-eq { from { height: 3px; } to { height: 12px; } }
+    .fh-chip.is-active, .fh-chip.is-active:hover { background: var(--ink); color: #fff; border-color: var(--ink); transition: transform .15s ease; }
+    .fh-chip.is-active .fh-chip-ico { background: #3d7bff; }
+    .fh-chip.is-active .fh-chip-ico svg { display: none; }
+    .fh-chip.is-active .fh-chip-eq { display: inline-flex; }
+    .fh-credit.is-glow { animation: fh-glow 1.6s ease-in-out infinite; }
+    @keyframes fh-glow { 50% { box-shadow: 0 0 0 6px rgba(61,123,255,.18), 0 10px 30px -18px rgba(24,25,27,.45); background: rgba(255,255,255,.85); } }
+    @media (prefers-reduced-motion: reduce) {
+        .fh-chip-eq i, .fh-credit.is-glow { animation: none; }
+    }
+    @media (max-width: 860px) {
+        .fh-chips { gap: 6px; margin-top: 12px; }
+        .fh-chip { font-size: .8rem; padding: .42rem .8rem .42rem .5rem; gap: 6px; }
+        .fh-chip-ico { width: 20px; height: 20px; }
+        .fh[data-chips="1"] .fh-transcript { min-height: 3.5rem; }
+    }
+
     @media (max-width: 860px) {
         .fh-copy {
             top: auto; width: 100%; padding: 60px 20px 20px; justify-content: flex-end;
@@ -369,6 +417,9 @@
             </button>
             <span class="fh-hint" id="fh-hint">Turn your sound on</span>
         </div>
+        <div class="fh-chips" id="fh-chips" role="group" aria-label="Ask Echo a question">
+            <span class="fh-chips-label">Ask Echo</span>
+        </div>
     </div>
     <div class="fh-figure" aria-hidden="true">
         <p class="fh-loading">Loading model…</p>
@@ -412,7 +463,7 @@
     </a>
     <div class="fh-who">
         <span>Developed by <a href="https://www.linkedin.com/in/tartendukumar/" target="_blank" rel="noopener">Tartendu Kumar</a></span>
-        <span class="fh-role">Co-founder &amp; CTO at <a href="https://zencia.ai" target="_blank" rel="noopener">Zencia.ai</a></span>
+        <span class="fh-role">Co-founder &amp; CTO at <a href="https://zensia.ai" target="_blank" rel="noopener">Zensia.ai</a></span>
     </div>
 </footer>
 
@@ -1267,10 +1318,32 @@
         statusEl.textContent = STATE_TEXT[next] || '';
     }
 
-    const words = GREETING.text.split(/\s+/);
+    // Questions offered as pills after the first greeting. Each answer is spoken and captioned.
+    // Add, remove or reword freely; `audio` works the same way as in GREETING.
+    const ICONS = {
+        person:  '<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5z"/>',
+        sparkle: '<path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7zM19 15l1 2.6 2.5.9-2.5 1-1 2.5-.9-2.5-2.6-1 2.6-.9z"/>',
+        code:    '<path d="M8.6 16.6L4 12l4.6-4.6L7.2 6 1.2 12l6 6zm6.8 0L20 12l-4.6-4.6L16.8 6l6 6-6 6z"/>',
+    };
+    const QUESTIONS = [
+        { id: 'creator', icon: 'person', label: 'Who developed you?',
+          text: "I was developed by Tartendu Kumar, Co-founder and CTO at Zensia.ai. Say hi on LinkedIn, just tap the card in the corner." },
+        { id: 'skills', icon: 'sparkle', label: 'What can you do?',
+          text: "I follow your cursor wherever it goes, wake up when you click, and say hello. Small screen, big personality." },
+        { id: 'made', icon: 'code', label: 'How were you made?',
+          text: "I'm a single web page. Three.js draws me in 3D, and your browser lends me its voice. No servers, no build step." },
+    ];
+
+    let line = GREETING, words = line.text.split(/\s+/);
     let caption = null, shown = 0, wordTimer = null;
-    function showCaption() {
+    function showCaption(question) {
         boxEl.textContent = '';
+        if (question) {
+            const q = document.createElement('p');
+            q.className = 'fh-msg fh-msg--user';
+            q.textContent = question;
+            boxEl.appendChild(q);
+        }
         caption = document.createElement('p');
         caption.className = 'fh-msg is-live';
         boxEl.appendChild(caption);
@@ -1294,38 +1367,46 @@
             || voices[0] || null;
     }
 
-    function greet() {
+    let sayToken = 0;
+    // Speak one line with captions. The greeting boots the TV with "HI"; answers show a short "thinking" beat.
+    function say(next, question) {
         stopVoice();
+        const token = ++sayToken;
+        line = { rate: GREETING.rate, pitch: GREETING.pitch, audio: '', ...next };
+        words = line.text.split(/\s+/);
         speaking = true;
         setState('speaking');
         talkLabel.textContent = 'Stop';
         hintEl.textContent = 'Turn your sound on';
-        showCaption();
+        showCaption(question);
         if (window.echoTV) window.echoTV.auto(false);
-        tv('greeting');
-        setTimeout(() => { if (speaking) tv('talking'); }, 900);
-        setTimeout(() => { if (speaking) GREETING.audio ? playFile() : speak(); }, 600);
+        const isGreeting = next === GREETING;
+        tv(isGreeting ? 'greeting' : 'thinking');
+        setTimeout(() => { if (speaking && token === sayToken) tv('talking'); }, isGreeting ? 900 : 650);
+        setTimeout(() => { if (speaking && token === sayToken) line.audio ? playFile() : speak(); }, isGreeting ? 600 : 450);
     }
+    const greet = () => { markChip(null); say(GREETING); };
 
     function speak() {
         if (!('speechSynthesis' in window)) { revealTo(words.length); return finish(); }
-        const u = new SpeechSynthesisUtterance(GREETING.text);
+        const text = line.text;
+        const u = new SpeechSynthesisUtterance(text);
         const voice = pickVoice();
         if (voice) u.voice = voice;
-        u.rate = GREETING.rate; u.pitch = GREETING.pitch;
+        u.rate = line.rate; u.pitch = line.pitch;
         let gotBoundary = false;
-        u.onstart = () => paceWords(GREETING.text.length / 14 / GREETING.rate);
+        u.onstart = () => paceWords(text.length / 14 / line.rate);
         u.onboundary = e => {
             if (e.name && e.name !== 'word') return;
             if (!gotBoundary) { gotBoundary = true; clearInterval(wordTimer); }
-            revealTo(GREETING.text.slice(0, e.charIndex).split(/\s+/).filter(Boolean).length + 1);
+            revealTo(text.slice(0, e.charIndex).split(/\s+/).filter(Boolean).length + 1);
         };
-        u.onend = u.onerror = () => { if (speaking) finish(); };
+        u.onend = u.onerror = () => { if (speaking && line.text === text) finish(); };
         speechSynthesis.speak(u);
     }
 
     function playFile() {
-        audioEl = new Audio(GREETING.audio);
+        audioEl = new Audio(line.audio);
         audioEl.onloadedmetadata = () => paceWords(audioEl.duration || 4);
         audioEl.onended = audioEl.onerror = () => { if (speaking) finish(); };
         audioEl.play().catch(() => finish());
@@ -1345,6 +1426,35 @@
         tv('idle');
         talkLabel.textContent = 'Hear it again';
         hintEl.textContent = 'Echo says hello';
+        markChip(null);
+        hero.dataset.chips = '1';            // reveal the question pills after the first line
+    }
+
+    // Build the question pills
+    const chipsEl = $('fh-chips');
+    const chipEls = {};
+    QUESTIONS.forEach(q => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'fh-chip';
+        b.innerHTML = `<span class="fh-chip-ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${ICONS[q.icon] || ICONS.sparkle}</svg>` +
+                      `<span class="fh-chip-eq" aria-hidden="true"><i></i><i></i><i></i></span></span>`;
+        b.append(q.label);
+        b.addEventListener('click', () => {
+            if (b.classList.contains('is-active')) return finish();   // click again to stop
+            markChip(q.id);
+            say(q, q.label);
+        });
+        chipsEl.appendChild(b);
+        chipEls[q.id] = b;
+    });
+    const creditEl = document.querySelector('.fh-credit');
+    function markChip(id) {
+        Object.entries(chipEls).forEach(([k, el]) => {
+            el.classList.toggle('is-active', k === id);
+            el.setAttribute('aria-pressed', String(k === id));
+        });
+        if (creditEl) creditEl.classList.toggle('is-glow', id === 'creator');   // point at the credit card
     }
 
     talkBtn.addEventListener('click', () => (speaking ? finish() : greet()));

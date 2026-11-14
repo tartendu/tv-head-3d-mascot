@@ -34,6 +34,7 @@ It follows your cursor, wakes up when you click, and greets you out loud.
 | 👀 **Follows you** | The TV head turns to track your cursor in real time. |
 | 💤 **Wakes up on click** | It starts on a “click to start” screen, boots up with a “HI”, a burst of static, and a pair of glowing eyes. |
 | 🗣️ **Talks** | Echo reads its greeting aloud with the browser's built-in voice while the caption types out word by word. |
+| 💬 **Answers questions** | After the greeting, “Ask Echo” pills appear: *Who developed you?*, *What can you do?* and *How were you made?* Tap one and Echo speaks the answer. |
 | 📺 **Mascot wordmark** | A tiny animated TV in the top-right corner sleeps, blinks, watches your cursor, and lip-syncs while Echo speaks. |
 | ⚡ **Zero setup** | One HTML file, with no backend, build step or API key. The 3D model is embedded in the page. |
 
@@ -98,6 +99,17 @@ Save and refresh. There's nothing to rebuild.
 - **Built-in voice (default):** free, and it works offline once the page has loaded. It sounds different in each browser and OS; **Microsoft Edge on Windows** has the most natural voices.
 - **Your own audio:** put an MP3 next to `index.html` and set `audio: 'greeting.mp3'`. The caption is paced to the audio's length.
 
+### Change the “Ask Echo” questions
+
+Right below `GREETING` in `index.html`, edit the `QUESTIONS` list. Each entry becomes a pill:
+
+```js
+{ id: 'skills', icon: 'sparkle', label: 'What can you do?',
+  text: "I follow your cursor wherever it goes..." },   // what Echo says when the pill is tapped
+```
+
+`icon` can be `person`, `sparkle` or `code`. Add, remove or reword entries freely. Like `GREETING`, each entry also accepts `audio` to play your own recording.
+
 ### Change the tagline or colors
 
 - The tagline *“the TV that says hello”* is in the `.fh-brand` markup.
@@ -154,6 +166,6 @@ Code is released under the [MIT License](LICENSE). You're free to use, modify an
 <div align="center">
 <br>
 
-Developed by **[Tartendu Kumar](https://www.linkedin.com/in/tartendukumar/)**, Co-founder & CTO at **[Zencia.ai](https://zencia.ai)**
+Developed by **[Tartendu Kumar](https://www.linkedin.com/in/tartendukumar/)**, Co-founder & CTO at **[Zensia.ai](https://zensia.ai)**
 
 </div>
